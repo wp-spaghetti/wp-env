@@ -29,9 +29,8 @@
 
 'size: medium':
   - any: ['src/**', 'tests/**']
-    count-lines: '>= 11'
     count-lines: '<= 100'
 
 'size: large':
   - any: ['src/**', 'tests/**']
-    count-lines: '>= 101'
+    count-lines: '> 100'

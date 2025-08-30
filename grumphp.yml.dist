@@ -7,7 +7,8 @@ grumphp:
         composer: ~
 
         # Composer normalize - standardize composer.json format
-        composer_normalize: ~
+        #FIXME - Temporarily disabled for PHP 8.4 compatibility
+        #composer_normalize: ~
 
         # File size check - prevent overly large files
         file_size:
@@ -59,7 +60,8 @@ grumphp:
         phpversion:
             project: '8.0'
 
-        # Psalm - Additional Static Analysis - temporarily disabled for PHP 8.4 compatibility
+        # Psalm - Additional Static Analysis
+        #FIXME - Temporarily disabled for PHP 8.4 compatibility
         # psalm:
         #     config: psalm.xml.dist
         #     ignore_patterns: ['vendor']
