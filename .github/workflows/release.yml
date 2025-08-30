@@ -59,9 +59,7 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           # Disable GrumPHP git hooks for semantic-release
-          composer config --unset scripts.pre-commit 2>/dev/null || true
-          composer config --unset scripts.commit-msg 2>/dev/null || true
-          git config --unset core.hooksPath 2>/dev/null || true
+          ./vendor/bin/grumphp git:deinit
           npx semantic-release
 
       - name: Get released version
