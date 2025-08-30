@@ -16,18 +16,3 @@
 
 'area: config':
 - any: ['*.php', '*.json', '*.xml', '*.yml', '*.yaml']
-
-'size: small':
-  - changed-files:
-    - any-glob-to-any-file: ['src/**', 'tests/**']
-    - count: '<= 10'
-
-'size: medium':
-  - changed-files:
-    - any-glob-to-any-file: ['src/**', 'tests/**']
-    - count: '11-100'
-
-'size: large':
-  - changed-files:
-    - any-glob-to-any-file: ['src/**', 'tests/**']
-    - count: '>= 101'
