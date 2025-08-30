@@ -7,8 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.0.0] - TBD
-
 ### Added
 - Initial release of WP Env package
 - Multi-source configuration support (WordPress constants, .env files, getenv())
@@ -25,6 +23,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 - Built-in protection for sensitive configuration values
 - Secure caching system that excludes sensitive keys
-
-[Unreleased]: https://github.com/wp-spaghetti/wp-env/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/wp-spaghetti/wp-env/releases/tag/v1.0.0
