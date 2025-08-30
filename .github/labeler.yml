@@ -1,37 +1,18 @@
 # Auto-label PRs based on changed files
 'area: core':
-  - 'src/**'
+- any: ['src/**']
 
 'area: tests':
-  - 'tests/**'
+- any: ['tests/**']
 
 'area: docs':
-  - '*.md'
-  - 'docs/**'
+- any: ['*.md', 'docs/**']
 
 'area: ci/cd':
-  - '.github/**'
+- any: ['.github/**']
 
 'area: dependencies':
-  - 'composer.json'
-  - 'composer.lock'
+- any: ['composer.json', 'composer.lock']
 
 'area: config':
-  - '*.php'
-  - '*.json'
-  - '*.xml'
-  - '*.yml'
-  - '*.yaml'
-
-'size: small':
-  - any: ['src/**', 'tests/**']
-    count-lines: '<= 10'
-
-'size: medium':
-  - any: ['src/**', 'tests/**']
-    count-lines: '>= 11'
-    count-lines: '<= 100'
-
-'size: large':
-  - any: ['src/**', 'tests/**']
-    count-lines: '>= 101'
+- any: ['*.php', '*.json', '*.xml', '*.yml', '*.yaml']

@@ -17,7 +17,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -38,10 +38,27 @@ jobs:
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest
+        run: composer install --prefer-dist --no-progress
+
+      - name: Setup PHPUnit config
+        run: |
+          if [[ "${{ matrix.php }}" == "8.0" ]]; then
+            cp phpunit-9.xml.dist phpunit.xml.dist
+            echo "Using PHPUnit 9 config for PHP ${{ matrix.php }}"
+          elif [[ "${{ matrix.php }}" == "8.1" ]]; then
+            cp phpunit-10.xml.dist phpunit.xml.dist
+            echo "Using PHPUnit 10 config for PHP ${{ matrix.php }}"
+          fi
 
       - name: Run tests
-        run: composer test
+        run: |
+          if [[ "${{ matrix.php }}" == "8.0" ]]; then
+            # Run PHPUnit directly for PHP 8.0 to avoid grumphp issues
+            vendor/bin/phpunit
+          else
+            # Use grumphp for other PHP versions
+            composer test
+          fi
 
       - name: Run tests with coverage
         if: matrix.php == '8.4'
@@ -60,7 +77,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -69,7 +86,7 @@ jobs:
           extensions: mbstring, intl
 
       - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest
+        run: composer install --prefer-dist --no-progress
 
       - name: Run PHP CS Fixer
         run: composer lint
