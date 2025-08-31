@@ -11,8 +11,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * initial release with comprehensive WordPress environment management ([6744b4d](https://github.com/wp-spaghetti/wp-env/commit/6744b4d5ef18adc1bf1e01dfd7a57aecbd327089))
 
-## [Unreleased]
-
 ### Added
 - Initial release of WP Env package
 - Multi-source configuration support (WordPress constants, .env files, getenv())
