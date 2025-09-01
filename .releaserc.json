@@ -1,6 +1,10 @@
 {
   "branches": [
-    "main"
+    "main",
+    {
+      "name": "support/+([0-9]).x",
+      "range": "+([0-9]).x"
+    }
   ],
   "plugins": [
     "@semantic-release/commit-analyzer",
