@@ -602,8 +602,9 @@ All releases are automatically created when changes are pushed to the `main` bra
 
 For your contributions please use:
 
+- [Conventional Commits](https://www.conventionalcommits.org)
 - [git-flow workflow](https://danielkummer.github.io/git-flow-cheatsheet/)
-- [conventional commits](https://www.conventionalcommits.org)
+- [Pull request workflow](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project)
 
 ## Sponsor
 

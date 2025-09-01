@@ -83,10 +83,16 @@ class Environment
     /**
      * Get environment variable with WordPress constants fallback and caching.
      *
-     * Priority: WordPress constants > .env files > getenv() > default
+     * Priority: Test mocks > WordPress constants > .env files > getenv() > default
      */
     public static function get(string $key, mixed $default = null): mixed
     {
+        // Check for test mocks first (highest priority)
+        global $mock_environment_vars;
+        if (isset($mock_environment_vars) && \is_array($mock_environment_vars) && \array_key_exists($key, $mock_environment_vars)) {
+            return $mock_environment_vars[$key];
+        }
+
         // Check cache first (skip for sensitive keys)
         if (!self::isSensitiveKey($key) && isset(self::$cache[$key])) {
             return self::$cache[$key];
@@ -112,6 +118,28 @@ class Environment
      */
     public static function getBool(string $key, bool $default = false): bool
     {
+        // Check for test mocks first with proper boolean conversion
+        global $mock_environment_vars;
+        if (isset($mock_environment_vars) && \is_array($mock_environment_vars) && \array_key_exists($key, $mock_environment_vars)) {
+            $value = $mock_environment_vars[$key];
+
+            if (\is_bool($value)) {
+                return $value;
+            }
+
+            if (\is_string($value)) {
+                $value = strtolower(trim($value));
+
+                return \in_array($value, ['1', 'true', 'on', 'yes', 'enabled'], true);
+            }
+
+            if (is_numeric($value)) {
+                return (bool) $value;
+            }
+
+            return $default;
+        }
+
         $value = self::get($key, $default);
 
         if (\is_bool($value)) {
@@ -136,6 +164,22 @@ class Environment
      */
     public static function getInt(string $key, int $default = 0): int
     {
+        // Check for test mocks first with proper integer conversion
+        global $mock_environment_vars;
+        if (isset($mock_environment_vars) && \is_array($mock_environment_vars) && \array_key_exists($key, $mock_environment_vars)) {
+            $value = $mock_environment_vars[$key];
+
+            if (\is_int($value)) {
+                return $value;
+            }
+
+            if (is_numeric($value)) {
+                return (int) $value;
+            }
+
+            return $default;
+        }
+
         $value = self::get($key, $default);
 
         if (\is_int($value)) {
@@ -154,6 +198,22 @@ class Environment
      */
     public static function getFloat(string $key, float $default = 0.0): float
     {
+        // Check for test mocks first with proper float conversion
+        global $mock_environment_vars;
+        if (isset($mock_environment_vars) && \is_array($mock_environment_vars) && \array_key_exists($key, $mock_environment_vars)) {
+            $value = $mock_environment_vars[$key];
+
+            if (\is_float($value)) {
+                return $value;
+            }
+
+            if (is_numeric($value)) {
+                return (float) $value;
+            }
+
+            return $default;
+        }
+
         $value = self::get($key, $default);
 
         if (\is_float($value)) {
@@ -176,6 +236,25 @@ class Environment
      */
     public static function getArray(string $key, array $default = []): array
     {
+        // Check for test mocks first with proper array conversion
+        global $mock_environment_vars;
+        if (isset($mock_environment_vars) && \is_array($mock_environment_vars) && \array_key_exists($key, $mock_environment_vars)) {
+            $value = $mock_environment_vars[$key];
+
+            if (\is_array($value)) {
+                return $value;
+            }
+
+            if (\is_string($value) && !empty($value)) {
+                // Split by comma and trim whitespace
+                $array = array_map('trim', explode(',', $value));
+
+                return array_filter($array); // Remove empty values
+            }
+
+            return $default;
+        }
+
         $value = self::get($key, $default);
 
         if (\is_array($value)) {
