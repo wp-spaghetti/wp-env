@@ -57,13 +57,13 @@
         "sort-packages": true
     },
     "scripts": {
-        "test-coverage": "vendor/bin/phpunit --coverage-clover=coverage.xml",
-        "code-quality": "grumphp run --tasks=phpmnd,phpparser",
-        "grumphp": "grumphp run",
+        "analysis": "grumphp run --tasks=phpstan",
+        "check": "grumphp run",
+        "ci": "grumphp run --no-interaction",
+        "coverage": "vendor/bin/phpunit --coverage-clover=coverage.xml",
         "lint": "grumphp run --tasks=phpcsfixer,phplint,phpstan,rector",
-        "qa": "grumphp run --no-interaction",
+        "quality": "grumphp run --tasks=phpmnd,phpparser",
         "security": "grumphp run --tasks=securitychecker_roave",
-        "static-analysis": "grumphp run --tasks=phpstan",
         "test": "grumphp run --tasks=phpunit"
     }
 }
