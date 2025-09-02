@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0](https://github.com/wp-spaghetti/wp-env/compare/v1.0.0...v2.0.0) (2025-09-02)
+
+### ⚠ BREAKING CHANGES
+
+* major release (#15) (#16)
+
+### Features
+
+* add global mock ([#13](https://github.com/wp-spaghetti/wp-env/issues/13)) ([72bb2d9](https://github.com/wp-spaghetti/wp-env/commit/72bb2d9e6d2355ebc8a3fc58c67b05b16a5a4512)), closes [#8](https://github.com/wp-spaghetti/wp-env/issues/8) [#10](https://github.com/wp-spaghetti/wp-env/issues/10) [#12](https://github.com/wp-spaghetti/wp-env/issues/12)
+* major release ([#15](https://github.com/wp-spaghetti/wp-env/issues/15)) ([#16](https://github.com/wp-spaghetti/wp-env/issues/16)) ([47814f3](https://github.com/wp-spaghetti/wp-env/commit/47814f313b3655b4fa1f0987249ac89a5e3545ec))
+* minor release ([#17](https://github.com/wp-spaghetti/wp-env/issues/17)) ([#18](https://github.com/wp-spaghetti/wp-env/issues/18)) ([7778847](https://github.com/wp-spaghetti/wp-env/commit/77788477894c78376787d34d5c6cc2d3aabb49c3))
+* minor release ([#19](https://github.com/wp-spaghetti/wp-env/issues/19)) ([#20](https://github.com/wp-spaghetti/wp-env/issues/20)) ([0a60a10](https://github.com/wp-spaghetti/wp-env/commit/0a60a10d842b777e84336bf1775d63f6db237c8c))
+
 ## 1.0.0 (2025-08-30)
 
 ### Features
