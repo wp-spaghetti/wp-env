@@ -28,13 +28,14 @@ if (!defined('WP_ENV')) {
 require_once __DIR__.'/../vendor/autoload.php';
 
 // Global test variables for mocking
-global $applied_filters, $triggered_actions, $mock_constants, $mock_env_vars, $mock_files;
+global $applied_filters, $triggered_actions, $mock_constants, $mock_env_vars, $mock_files, $mock_environment_vars;
 
 $applied_filters = [];
 $triggered_actions = [];
 $mock_constants = [];
 $mock_env_vars = [];
 $mock_files = [];
+$mock_environment_vars = [];
 
 // Mock WordPress functions for testing
 
@@ -151,13 +152,14 @@ if (!function_exists('mock_getenv')) {
 // Test utilities for managing global state
 function reset_wp_env_test_globals(): void
 {
-    global $applied_filters, $triggered_actions, $mock_constants, $mock_env_vars, $mock_files;
+    global $applied_filters, $triggered_actions, $mock_constants, $mock_env_vars, $mock_files, $mock_environment_vars;
 
     $applied_filters = [];
     $triggered_actions = [];
     $mock_constants = [];
     $mock_env_vars = [];
     $mock_files = [];
+    $mock_environment_vars = [];
 }
 
 /**
@@ -173,10 +175,24 @@ function set_mock_constant(string $name, $value): void
     }
 }
 
+/**
+ * Set mock environment variable (legacy system).
+ */
 function set_mock_env_var(string $name, string $value): void
 {
     global $mock_env_vars;
     $mock_env_vars[$name] = $value;
+}
+
+/**
+ * Set mock environment variable (new system with highest priority).
+ *
+ * @param mixed $value
+ */
+function set_mock_environment_var(string $name, $value): void
+{
+    global $mock_environment_vars;
+    $mock_environment_vars[$name] = $value;
 }
 
 function set_mock_file(string $filename, bool $exists = true): void
