@@ -83,14 +83,20 @@ class Environment
     /**
      * Get environment variable with WordPress constants fallback and caching.
      *
-     * Priority: Test mocks > WordPress constants > .env files > getenv() > default
+     * Priority: WordPress constants > .env files > getenv() > default
      */
     public static function get(string $key, mixed $default = null): mixed
     {
-        // Check for test mocks first (highest priority)
-        global $mock_environment_vars;
-        if (isset($mock_environment_vars) && \is_array($mock_environment_vars) && \array_key_exists($key, $mock_environment_vars)) {
-            return $mock_environment_vars[$key];
+        // In testing mode with mock variables, always bypass cache
+        if (self::hasMockVariables()) {
+            $value = self::getRaw($key, $default);
+
+            // Apply WordPress filter for customization
+            if (\function_exists('apply_filters')) {
+                return apply_filters('wp_env_get_value', $value, $key, $default);
+            }
+
+            return $value;
         }
 
         // Check cache first (skip for sensitive keys)
@@ -105,7 +111,7 @@ class Environment
             $value = apply_filters('wp_env_get_value', $value, $key, $default);
         }
 
-        // Cache non-sensitive values
+        // Cache non-sensitive values (but not in testing mode)
         if (!self::isSensitiveKey($key)) {
             self::$cache[$key] = $value;
         }
@@ -118,28 +124,6 @@ class Environment
      */
     public static function getBool(string $key, bool $default = false): bool
     {
-        // Check for test mocks first with proper boolean conversion
-        global $mock_environment_vars;
-        if (isset($mock_environment_vars) && \is_array($mock_environment_vars) && \array_key_exists($key, $mock_environment_vars)) {
-            $value = $mock_environment_vars[$key];
-
-            if (\is_bool($value)) {
-                return $value;
-            }
-
-            if (\is_string($value)) {
-                $value = strtolower(trim($value));
-
-                return \in_array($value, ['1', 'true', 'on', 'yes', 'enabled'], true);
-            }
-
-            if (is_numeric($value)) {
-                return (bool) $value;
-            }
-
-            return $default;
-        }
-
         $value = self::get($key, $default);
 
         if (\is_bool($value)) {
@@ -164,22 +148,6 @@ class Environment
      */
     public static function getInt(string $key, int $default = 0): int
     {
-        // Check for test mocks first with proper integer conversion
-        global $mock_environment_vars;
-        if (isset($mock_environment_vars) && \is_array($mock_environment_vars) && \array_key_exists($key, $mock_environment_vars)) {
-            $value = $mock_environment_vars[$key];
-
-            if (\is_int($value)) {
-                return $value;
-            }
-
-            if (is_numeric($value)) {
-                return (int) $value;
-            }
-
-            return $default;
-        }
-
         $value = self::get($key, $default);
 
         if (\is_int($value)) {
@@ -198,22 +166,6 @@ class Environment
      */
     public static function getFloat(string $key, float $default = 0.0): float
     {
-        // Check for test mocks first with proper float conversion
-        global $mock_environment_vars;
-        if (isset($mock_environment_vars) && \is_array($mock_environment_vars) && \array_key_exists($key, $mock_environment_vars)) {
-            $value = $mock_environment_vars[$key];
-
-            if (\is_float($value)) {
-                return $value;
-            }
-
-            if (is_numeric($value)) {
-                return (float) $value;
-            }
-
-            return $default;
-        }
-
         $value = self::get($key, $default);
 
         if (\is_float($value)) {
@@ -236,25 +188,6 @@ class Environment
      */
     public static function getArray(string $key, array $default = []): array
     {
-        // Check for test mocks first with proper array conversion
-        global $mock_environment_vars;
-        if (isset($mock_environment_vars) && \is_array($mock_environment_vars) && \array_key_exists($key, $mock_environment_vars)) {
-            $value = $mock_environment_vars[$key];
-
-            if (\is_array($value)) {
-                return $value;
-            }
-
-            if (\is_string($value) && !empty($value)) {
-                // Split by comma and trim whitespace
-                $array = array_map('trim', explode(',', $value));
-
-                return array_filter($array); // Remove empty values
-            }
-
-            return $default;
-        }
-
         $value = self::get($key, $default);
 
         if (\is_array($value)) {
@@ -341,19 +274,23 @@ class Environment
      */
     public static function isDocker(): bool
     {
-        if (isset(self::$computedCache['is_docker'])) {
+        // In testing mode, don't use computed cache
+        if (!self::hasMockVariables() && isset(self::$computedCache['is_docker'])) {
             return self::$computedCache['is_docker'];
         }
 
         // For testing, check if we have mock functions available
         $fileExists = \function_exists('mock_file_exists') ? 'mock_file_exists' : 'file_exists';
         $fileGetContents = \function_exists('mock_file_get_contents') ? 'mock_file_get_contents' : 'file_get_contents';
-        $getEnv = \function_exists('mock_getenv') ? 'mock_getenv' : 'getenv';
+
+        // Check for wp-logger mock environment variables first
+        $dockerContainer = self::getMockAwareEnvVar('DOCKER_CONTAINER');
+        $kubernetesHost = self::getMockAwareEnvVar('KUBERNETES_SERVICE_HOST');
 
         $isDocker = $fileExists('/.dockerenv')
             || ($fileExists('/proc/1/cgroup') && str_contains((string) $fileGetContents('/proc/1/cgroup'), 'docker'))
-            || !empty($getEnv('DOCKER_CONTAINER'))
-            || !empty($getEnv('KUBERNETES_SERVICE_HOST')) // Kubernetes detection
+            || !empty($dockerContainer)
+            || !empty($kubernetesHost) // Kubernetes detection
             || ($fileExists('/proc/self/mountinfo') && str_contains((string) $fileGetContents('/proc/self/mountinfo'), 'docker'));
 
         // Allow override via WordPress filter
@@ -361,7 +298,10 @@ class Environment
             $isDocker = apply_filters('wp_env_is_docker', $isDocker);
         }
 
-        self::$computedCache['is_docker'] = $isDocker;
+        // Only cache if not in testing mode
+        if (!self::hasMockVariables()) {
+            self::$computedCache['is_docker'] = $isDocker;
+        }
 
         return $isDocker;
     }
@@ -371,22 +311,28 @@ class Environment
      */
     public static function isContainer(): bool
     {
-        if (isset(self::$computedCache['is_container'])) {
+        // In testing mode, don't use computed cache
+        if (!self::hasMockVariables() && isset(self::$computedCache['is_container'])) {
             return self::$computedCache['is_container'];
         }
 
-        $getEnv = \function_exists('mock_getenv') ? 'mock_getenv' : 'getenv';
+        $podmanContainer = self::getMockAwareEnvVar('PODMAN_CONTAINER');
+        $singularityContainer = self::getMockAwareEnvVar('SINGULARITY_CONTAINER');
+        $apptainerContainer = self::getMockAwareEnvVar('APPTAINER_CONTAINER');
 
         $isContainer = self::isDocker()
-            || !empty($getEnv('PODMAN_CONTAINER'))
-            || !empty($getEnv('SINGULARITY_CONTAINER'))
-            || !empty($getEnv('APPTAINER_CONTAINER'));
+            || !empty($podmanContainer)
+            || !empty($singularityContainer)
+            || !empty($apptainerContainer);
 
         if (\function_exists('apply_filters')) {
             $isContainer = apply_filters('wp_env_is_container', $isContainer);
         }
 
-        self::$computedCache['is_container'] = $isContainer;
+        // Only cache if not in testing mode
+        if (!self::hasMockVariables()) {
+            self::$computedCache['is_container'] = $isContainer;
+        }
 
         return $isContainer;
     }
@@ -396,7 +342,8 @@ class Environment
      */
     public static function getEnvironment(): string
     {
-        if (isset(self::$computedCache['environment'])) {
+        // In testing mode, don't use computed cache
+        if (!self::hasMockVariables() && isset(self::$computedCache['environment'])) {
             return self::$computedCache['environment'];
         }
 
@@ -430,7 +377,10 @@ class Environment
             $environment = apply_filters('wp_env_get_environment', $environment, $env);
         }
 
-        self::$computedCache['environment'] = $environment;
+        // Only cache if not in testing mode
+        if (!self::hasMockVariables()) {
+            self::$computedCache['environment'] = $environment;
+        }
 
         return $environment;
     }
@@ -593,11 +543,43 @@ class Environment
     }
 
     /**
+     * Check if we're in a testing environment with mock variables.
+     */
+    private static function hasMockVariables(): bool
+    {
+        global $mock_environment_vars, $mock_env_vars, $mock_constants;
+
+        return (isset($mock_environment_vars) && !empty($mock_environment_vars))
+            || (isset($mock_env_vars) && !empty($mock_env_vars))
+            || (isset($mock_constants) && !empty($mock_constants));
+    }
+
+    /**
      * Get raw environment variable without caching or filtering.
      */
     private static function getRaw(string $key, mixed $default = null): mixed
     {
-        // First try WordPress constants (more WordPress-native)
+        // First check wp-logger AND wp-env mock environment variables (ABSOLUTE PRIORITY in testing)
+        $mockValue = self::getMockAwareEnvVar($key);
+        if (false !== $mockValue) {
+            return $mockValue;
+        }
+
+        // Check wp-env mock constants (for testing compatibility) - also absolute priority
+        global $mock_constants;
+        if (isset($mock_constants) && \is_array($mock_constants) && isset($mock_constants[$key])) {
+            return $mock_constants[$key];
+        }
+
+        // Only proceed with normal priority if we're NOT in testing mode with mock variables
+        if (self::hasMockVariables()) {
+            // In testing mode, if no mock found, return default immediately
+            // This prevents WordPress constants from overriding during testing
+            return $default;
+        }
+
+        // Normal priority outside of testing:
+        // Then try WordPress constants (more WordPress-native)
         if (\defined($key)) {
             return \constant($key);
         }
@@ -620,6 +602,38 @@ class Environment
         $value = $getEnv($key);
 
         return false !== $value ? $value : $default;
+    }
+
+    /**
+     * Get environment variable with mock support for wp-logger testing.
+     */
+    private static function getMockAwareEnvVar(string $key): false|string
+    {
+        // Check wp-logger mock environment variables first (absolute priority)
+        global $mock_environment_vars;
+        if (isset($mock_environment_vars) && \is_array($mock_environment_vars)) {
+            if (isset($mock_environment_vars[$key])) {
+                return $mock_environment_vars[$key];
+            }
+        }
+
+        // Check wp-env mock environment variables
+        global $mock_env_vars;
+        if (isset($mock_env_vars) && \is_array($mock_env_vars)) {
+            if (isset($mock_env_vars[$key])) {
+                return $mock_env_vars[$key];
+            }
+        }
+
+        // In testing mode, don't fall back to regular getenv to maintain mock isolation
+        if (self::hasMockVariables()) {
+            return false;
+        }
+
+        // Fall back to regular getenv only in non-testing mode
+        $getEnv = \function_exists('mock_getenv') ? 'mock_getenv' : 'getenv';
+
+        return $getEnv($key);
     }
 
     /**
@@ -653,20 +667,24 @@ class Environment
      */
     private static function detectEnvironmentByIndicators(): string
     {
-        // Development indicators
-        if (self::getBool('WP_DEBUG', false)
-            && ('localhost' === self::get('SERVER_NAME')
-             || str_contains((string) self::get('HTTP_HOST', ''), 'localhost')
-             || str_contains((string) self::get('HTTP_HOST', ''), '.local')
-             || str_contains((string) self::get('HTTP_HOST', ''), '.test')
-             || str_contains((string) self::get('HTTP_HOST', ''), '.dev'))) {
+        // Development indicators - use mock-aware methods
+        $wpDebug = self::getBool('WP_DEBUG', false);
+        $serverName = self::getMockAwareEnvVar('SERVER_NAME');
+        $httpHost = self::getMockAwareEnvVar('HTTP_HOST');
+
+        if ($wpDebug
+            && ('localhost' === $serverName
+             || str_contains((string) $httpHost, 'localhost')
+             || str_contains((string) $httpHost, '.local')
+             || str_contains((string) $httpHost, '.test')
+             || str_contains((string) $httpHost, '.dev'))) {
             return self::ENV_DEVELOPMENT;
         }
 
         // Staging indicators
-        if (str_contains((string) self::get('HTTP_HOST', ''), 'staging')
-            || str_contains((string) self::get('HTTP_HOST', ''), 'stage')
-            || str_contains((string) self::get('HTTP_HOST', ''), 'test')) {
+        if (str_contains((string) $httpHost, 'staging')
+            || str_contains((string) $httpHost, 'stage')
+            || str_contains((string) $httpHost, 'test')) {
             return self::ENV_STAGING;
         }
 
