@@ -24,6 +24,10 @@ if (!defined('WP_ENV')) {
     define('WP_ENV', 'testing');
 }
 
+if (!defined('WP_ENVIRONMENT_TYPE')) {
+    define('WP_ENVIRONMENT_TYPE', 'testing');
+}
+
 // Autoload Composer dependencies
 require_once __DIR__.'/../vendor/autoload.php';
 

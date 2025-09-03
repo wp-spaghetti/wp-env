@@ -1,12 +1,12 @@
+![PHP Version](https://img.shields.io/packagist/php-v/wp-spaghetti/wp-env)
 ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/wp-spaghetti/wp-env/total)
 ![GitHub Actions Workflow Status](https://github.com/wp-spaghetti/wp-env/actions/workflows/main.yml/badge.svg)
+![Coverage Status](https://img.shields.io/codecov/c/github/wp-spaghetti/wp-env)
 ![GitHub Issues](https://img.shields.io/github/issues/wp-spaghetti/wp-env)
 ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)
 ![GitHub Release](https://img.shields.io/github/v/release/wp-spaghetti/wp-env)
 ![License](https://img.shields.io/github/license/wp-spaghetti/wp-env)
 <!--
-![PHP Version](https://img.shields.io/packagist/php-v/wp-spaghetti/wp-env)
-![Coverage Status](https://img.shields.io/codecov/c/github/wp-spaghetti/wp-env)
 ![Code Climate](https://img.shields.io/codeclimate/maintainability/wp-spaghetti/wp-env)
 -->
 
@@ -586,7 +586,7 @@ echo "Debug Mode: " . (Environment::isDebug() ? 'enabled' : 'disabled') . "\n";
 
 ## Changelog
 
-Please see [CHANGELOG.md](CHANGELOG.md) for a detailed list of changes for each release.
+Please see [CHANGELOG](CHANGELOG.md) for a detailed list of changes for each release.
 
 We follow [Semantic Versioning](https://semver.org/) and use [Conventional Commits](https://www.conventionalcommits.org/) to automatically generate our changelog.
 
@@ -606,6 +606,8 @@ For your contributions please use:
 - [git-flow workflow](https://danielkummer.github.io/git-flow-cheatsheet/)
 - [Pull request workflow](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project)
 
+See [CONTRIBUTING](CONTRIBUTING.md) for detailed guidelines.
+
 ## Sponsor
 
 [<img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" width="200" alt="Buy Me A Coffee">](https://buymeacoff.ee/frugan)
@@ -614,4 +616,3 @@ For your contributions please use:
 
 (ɔ) Copyleft 2025 [Frugan](https://frugan.it).  
 [GNU GPLv3](https://choosealicense.com/licenses/gpl-3.0/), see [LICENSE](LICENSE) file.
-
