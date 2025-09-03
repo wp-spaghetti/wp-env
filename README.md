@@ -606,7 +606,7 @@ For your contributions please use:
 - [git-flow workflow](https://danielkummer.github.io/git-flow-cheatsheet/)
 - [Pull request workflow](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project)
 
-See [CONTRIBUTING](CONTRIBUTING.md) for detailed guidelines.
+See [CONTRIBUTING](.github/CONTRIBUTING.md) for detailed guidelines.
 
 ## Sponsor
 
