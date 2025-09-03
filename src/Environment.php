@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace WpSpaghetti\WpEnv;
 
 use Env\Env;
+use PHPUnit\Framework\TestCase;
 
 if (!\defined('ABSPATH')) {
     exit;
@@ -41,6 +42,8 @@ class Environment
     public const ENV_STAGING = 'staging';
 
     public const ENV_PRODUCTION = 'production';
+
+    public const ENV_TESTING = 'testing';
 
     /**
      * Cache for environment values to improve performance.
@@ -368,7 +371,8 @@ class Environment
         // Map common variations
         $environment = match ($env) {
             'dev', 'develop', 'development', 'local' => self::ENV_DEVELOPMENT,
-            'stage', 'staging', 'test', 'testing' => self::ENV_STAGING,
+            'stage', 'staging', => self::ENV_STAGING,
+            'test', 'testing' => self::ENV_TESTING,
             'prod', 'production', 'live' => self::ENV_PRODUCTION,
             default => self::detectEnvironmentByIndicators()
         };
@@ -407,6 +411,34 @@ class Environment
     public static function isProduction(): bool
     {
         return self::ENV_PRODUCTION === self::getEnvironment();
+    }
+
+    /**
+     * Check if we're in testing environment.
+     * This includes both environment variables and PHPUnit runtime detection.
+     */
+    public static function isTesting(): bool
+    {
+        // First check PHPUnit runtime (not affected by mocks)
+        if (\defined('PHPUNIT_COMPOSER_INSTALL') || class_exists(TestCase::class)) {
+            return true;
+        }
+
+        $testingValue = self::ENV_TESTING;
+
+        // Then check WordPress constants (not affected by mocks)
+        // @phpstan-ignore-next-line identical.alwaysTrue (constants may vary in different environments)
+        if (\defined('WP_ENV') && $testingValue === \constant('WP_ENV')) {
+            return true;
+        }
+
+        // @phpstan-ignore-next-line identical.alwaysTrue (constants may vary in different environments)
+        if (\defined('WP_ENVIRONMENT_TYPE') && $testingValue === \constant('WP_ENVIRONMENT_TYPE')) {
+            return true;
+        }
+
+        // Finally check environment variables (affected by mocks)
+        return self::ENV_TESTING === self::getEnvironment();
     }
 
     /**
@@ -579,12 +611,12 @@ class Environment
         }
 
         // Normal priority outside of testing:
-        // Then try WordPress constants (more WordPress-native)
+        // WordPress constants have priority in production (defined in wp-config.php)
         if (\defined($key)) {
             return \constant($key);
         }
 
-        // Then try oscarotero/env (for Bedrock and modern setups)
+        // Then try oscarotero/env (for Bedrock and modern setups) - only in non-testing mode
         if (\function_exists('Env\env')) {
             /** @phpstan-ignore-next-line */
             $originalDefault = Env::$default ?? null;
@@ -626,9 +658,9 @@ class Environment
         }
 
         // In testing mode, don't fall back to regular getenv to maintain mock isolation
-        if (self::hasMockVariables()) {
-            return false;
-        }
+        // if (self::hasMockVariables()) {
+        //     return false;
+        // }
 
         // Fall back to regular getenv only in non-testing mode
         $getEnv = \function_exists('mock_getenv') ? 'mock_getenv' : 'getenv';
