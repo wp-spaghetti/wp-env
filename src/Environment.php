@@ -419,8 +419,8 @@ class Environment
      */
     public static function isTesting(): bool
     {
-        // First check PHPUnit runtime (not affected by mocks)
-        if (\defined('PHPUNIT_COMPOSER_INSTALL') || class_exists(TestCase::class)) {
+        // Check if PHPUnit is actually running (not just installed)
+        if (self::isPhpUnitRunning()) {
             return true;
         }
 
@@ -722,5 +722,63 @@ class Environment
 
         // Production is the safe default
         return self::ENV_PRODUCTION;
+    }
+
+    /**
+     * Check if PHPUnit is actually running (not just installed).
+     */
+    private static function isPhpUnitRunning(): bool
+    {
+        // Check for PHPUnit-specific runtime indicators
+        if (\defined('PHPUNIT_COMPOSER_INSTALL')) {
+            return true;
+        }
+
+        // Check if PHPUnit configuration file is loaded
+        if (isset($GLOBALS['__PHPUNIT_CONFIGURATION_FILE'])) {
+            return true;
+        }
+
+        // Check for PHPUnit result cache (set during execution)
+        if (isset($_ENV['PHPUNIT_RESULT_CACHE'])) {
+            return true;
+        }
+
+        // Check if we're in PHPUnit process by examining the call stack
+        if (\function_exists('debug_backtrace')) {
+            $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 15);
+            foreach ($backtrace as $frame) {
+                if (isset($frame['file']) && str_contains($frame['file'], '/phpunit')) {
+                    return true;
+                }
+
+                if (isset($frame['class']) && str_starts_with($frame['class'], 'PHPUnit\\')) {
+                    return true;
+                }
+            }
+        }
+
+        // Check for specific PHPUnit environment variables
+        $phpunitVars = [
+            'PHPUNIT_RESULT_CACHE',
+            'PHPUNIT_VERSION',
+            'PHPUNIT_RUNNING',
+        ];
+
+        foreach ($phpunitVars as $phpunitVar) {
+            if (!empty($_ENV[$phpunitVar]) || !empty($_SERVER[$phpunitVar])) {
+                return true;
+            }
+        }
+
+        // Last resort: check if TestCase class exists AND we can find PHPUnit-specific globals
+        if (class_exists(TestCase::class)
+            && (isset($GLOBALS['__PHPUNIT_PHAR__'])
+             || isset($GLOBALS['__PHPUNIT_ISOLATION_BLACKLIST__'])
+             || isset($GLOBALS['__PHPUNIT_BOOTSTRAP__']))) {
+            return true;
+        }
+
+        return false;
     }
 }
