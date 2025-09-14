@@ -13,7 +13,11 @@ declare(strict_types=1);
 
 // Define WordPress constants for testing
 if (!defined('ABSPATH')) {
-    define('ABSPATH', '/tmp/');
+    define('ABSPATH', '/tmp/wordpress/');
+}
+
+if (!defined('WPINC')) {
+    define('WPINC', 'wp-includes');
 }
 
 if (!defined('WP_DEBUG')) {
@@ -29,7 +33,7 @@ if (!defined('WP_ENVIRONMENT_TYPE')) {
 }
 
 // Autoload Composer dependencies
-require_once __DIR__.'/../vendor/autoload.php';
+require_once dirname(__DIR__).'/vendor/autoload.php';
 
 // Global test variables for mocking
 global $applied_filters, $triggered_actions, $mock_constants, $mock_env_vars, $mock_files, $mock_environment_vars;
