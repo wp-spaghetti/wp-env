@@ -1,13 +1,18 @@
 ![PHP Version](https://img.shields.io/packagist/php-v/wp-spaghetti/wp-env)
-![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/wp-spaghetti/wp-env/total)
+![Packagist Downloads](https://img.shields.io/packagist/dt/wp-spaghetti/wp-env)
+![Packagist Stars](https://img.shields.io/packagist/stars/wp-spaghetti/wp-env)
 ![GitHub Actions Workflow Status](https://github.com/wp-spaghetti/wp-env/actions/workflows/main.yml/badge.svg)
 ![Coverage Status](https://img.shields.io/codecov/c/github/wp-spaghetti/wp-env)
+![Known Vulnerabilities](https://snyk.io/test/github/wp-spaghetti/wp-env/badge.svg)
 ![GitHub Issues](https://img.shields.io/github/issues/wp-spaghetti/wp-env)
-![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)
+
 ![GitHub Release](https://img.shields.io/github/v/release/wp-spaghetti/wp-env)
 ![License](https://img.shields.io/github/license/wp-spaghetti/wp-env)
 <!--
+Qlty @see https://github.com/badges/shields/issues/11192
+![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/wp-spaghetti/wp-env/total)
 ![Code Climate](https://img.shields.io/codeclimate/maintainability/wp-spaghetti/wp-env)
+![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)
 -->
 
 # WP Env
