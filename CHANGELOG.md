@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.4](https://github.com/wp-spaghetti/wp-env/compare/v2.2.3...v2.2.4) (2026-04-07)
+
+### Bug Fixes
+
+* fix getBool when environment variable is empty ([#44](https://github.com/wp-spaghetti/wp-env/issues/44)) ([#45](https://github.com/wp-spaghetti/wp-env/issues/45)) ([e50d303](https://github.com/wp-spaghetti/wp-env/commit/e50d303ec47956ee733092510633d7e8d0f30c29))
+
 ## [2.2.3](https://github.com/wp-spaghetti/wp-env/compare/v2.2.2...v2.2.3) (2025-09-14)
 
 
