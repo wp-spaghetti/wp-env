@@ -71,8 +71,8 @@
   },
   "scripts": {
     "analysis": "@grumphp --tasks=phpstan",
-    "grumphp": "@php -d max_execution_time=0 -d memory_limit=-1 -f ./vendor/bin/grumphp -- run",
     "ci": "@grumphp --no-interaction",
+    "grumphp": "@php -d max_execution_time=0 -d memory_limit=-1 -f ./vendor/bin/grumphp -- run",
     "lint": "@grumphp --tasks=phpcsfixer,phplint,rector",
     "quality": "@grumphp --tasks=phpmnd,phpparser",
     "rector": "@php -d max_execution_time=0 -d memory_limit=-1 -f ./vendor/bin/rector -- process --ansi --clear-cache",

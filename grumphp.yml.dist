@@ -7,8 +7,7 @@ grumphp:
         composer: ~
 
         # Composer normalize - standardize composer.json format
-        #FIXME - Temporarily disabled for PHP 8.4 compatibility
-        #composer_normalize: ~
+        composer_normalize: ~
 
         # File size check - prevent overly large files
         file_size:
