@@ -1,5 +1,23 @@
+# Cache
 .phpunit.cache/
 .psalm/
-vendor/
+
+# Dependencies
+/vendor/
+/venv/
 composer.lock
 composer.develop.*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swo
+*.swp
+*~
+
+# Other
+/.claude*
