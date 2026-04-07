@@ -136,6 +136,10 @@ class Environment
         if (\is_string($value)) {
             $value = strtolower(trim($value));
 
+            if ('' === $value) {
+                return $default;
+            }
+
             return \in_array($value, ['1', 'true', 'on', 'yes', 'enabled'], true);
         }
 

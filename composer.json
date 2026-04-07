@@ -1,82 +1,83 @@
 {
-    "name": "wp-spaghetti/wp-env",
-    "description": "A comprehensive WordPress environment management utility with Docker detection, typed getters, and secure configuration handling",
-    "license": "GPL-3.0-or-later",
-    "type": "library",
-    "keywords": [
-        "wordpress",
-        "environment",
-        "configuration",
-        "docker",
-        "env",
-        "config",
-        "bedrock"
-    ],
-    "authors": [
-        {
-            "name": "Frugan",
-            "email": "dev@frugan.it",
-            "homepage": "https://github.com/frugan-dev",
-            "role": "Developer"
-        }
-    ],
-    "homepage": "https://github.com/wp-spaghetti/wp-env",
-    "support": {
-        "issues": "https://github.com/wp-spaghetti/wp-env/issues",
-        "source": "https://github.com/wp-spaghetti/wp-env",
-        "docs": "https://github.com/wp-spaghetti/wp-env#readme"
-    },
-    "funding": [
-        {
-            "type": "custom",
-            "url": "https://buymeacoff.ee/frugan"
-        }
-    ],
-    "require": {
-        "php": ">=8.0"
-    },
-    "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.86",
-        "php-parallel-lint/php-parallel-lint": "^1.4",
-        "phpro/grumphp-shim": "^2.0",
-        "phpstan/phpstan": "^1.12|^2.1",
-        "phpunit/phpunit": "^9.0|^10.0|^11.0|^12.0",
-        "povils/phpmnd": "^3.6",
-        "rector/rector": "^1.2|^2.1",
-        "roave/security-advisories": "dev-latest",
-        "squizlabs/php_codesniffer": "^3.13 || ^4.0",
-        "vimeo/psalm": "^5.26|^6.13"
-    },
-    "suggest": {
-        "oscarotero/env": "For .env file support in modern WordPress setups like Bedrock"
-    },
-    "autoload": {
-        "psr-4": {
-            "WpSpaghetti\\WpEnv\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "WpSpaghetti\\WpEnv\\Tests\\": "tests/"
-        }
-    },
-    "config": {
-        "allow-plugins": {
-            "ergebnis/composer-normalize": true,
-            "phpro/grumphp-shim": true
-        },
-        "optimize-autoloader": true,
-        "sort-packages": true
-    },
-    "scripts": {
-        "analysis": "@check --tasks=phpstan",
-        "check": "@php -d max_execution_time=0 -d memory_limit=-1 -f ./vendor/bin/grumphp -- run",
-        "ci": "@check --no-interaction",
-        "lint": "@check --tasks=phpcsfixer,phplint,rector",
-        "quality": "@check --tasks=phpmnd,phpparser",
-        "rector": "@php -d max_execution_time=0 -d memory_limit=-1 -f ./vendor/bin/rector -- process --ansi --clear-cache",
-        "security": "@check --tasks=securitychecker_roave",
-        "test": "@check --tasks=phpunit",
-        "test:coverage": "@php -d max_execution_time=0 -d memory_limit=-1 ./vendor/bin/phpunit --coverage-clover=coverage.xml"
+  "name": "wp-spaghetti/wp-env",
+  "description": "A comprehensive WordPress environment management utility with Docker detection, typed getters, and secure configuration handling",
+  "license": "GPL-3.0-or-later",
+  "type": "library",
+  "keywords": [
+    "wordpress",
+    "environment",
+    "configuration",
+    "docker",
+    "env",
+    "config",
+    "bedrock"
+  ],
+  "authors": [
+    {
+      "name": "Frugan",
+      "email": "dev@frugan.it",
+      "homepage": "https://github.com/frugan-dev",
+      "role": "Developer"
     }
+  ],
+  "homepage": "https://github.com/wp-spaghetti/wp-env",
+  "support": {
+    "issues": "https://github.com/wp-spaghetti/wp-env/issues",
+    "source": "https://github.com/wp-spaghetti/wp-env",
+    "docs": "https://github.com/wp-spaghetti/wp-env#readme"
+  },
+  "funding": [
+    {
+      "type": "custom",
+      "url": "https://buymeacoff.ee/frugan"
+    }
+  ],
+  "require": {
+    "php": ">=8.0"
+  },
+  "require-dev": {
+    "ergebnis/composer-normalize": "^2.50",
+    "friendsofphp/php-cs-fixer": "^3.86",
+    "php-parallel-lint/php-parallel-lint": "^1.4",
+    "phpro/grumphp-shim": "^2.0",
+    "phpstan/phpstan": "^1.12 || ^2.1",
+    "phpunit/phpunit": "^9.0 || ^10.0 || ^11.0 || ^12.0 || ^13.0",
+    "povils/phpmnd": "^3.6",
+    "rector/rector": "^1.2 || ^2.1",
+    "roave/security-advisories": "dev-latest",
+    "squizlabs/php_codesniffer": "^3.13 || ^4.0",
+    "vimeo/psalm": "^5.26 || ^6.13"
+  },
+  "suggest": {
+    "oscarotero/env": "For .env file support in modern WordPress setups like Bedrock"
+  },
+  "autoload": {
+    "psr-4": {
+      "WpSpaghetti\\WpEnv\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "WpSpaghetti\\WpEnv\\Tests\\": "tests/"
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "ergebnis/composer-normalize": true,
+      "phpro/grumphp-shim": true
+    },
+    "optimize-autoloader": true,
+    "sort-packages": true
+  },
+  "scripts": {
+    "analysis": "@grumphp --tasks=phpstan",
+    "grumphp": "@php -d max_execution_time=0 -d memory_limit=-1 -f ./vendor/bin/grumphp -- run",
+    "ci": "@grumphp --no-interaction",
+    "lint": "@grumphp --tasks=phpcsfixer,phplint,rector",
+    "quality": "@grumphp --tasks=phpmnd,phpparser",
+    "rector": "@php -d max_execution_time=0 -d memory_limit=-1 -f ./vendor/bin/rector -- process --ansi --clear-cache",
+    "security": "@grumphp --tasks=securitychecker_roave",
+    "test": "@grumphp --tasks=phpunit",
+    "test:coverage": "@php -d max_execution_time=0 -d memory_limit=-1 ./vendor/bin/phpunit --coverage-clover=coverage.xml"
+  }
 }

@@ -64,6 +64,11 @@ final class EnvironmentTest extends TestCase
 
     public function testGetBool(): void
     {
+        // Test empty string falls back to default
+        set_mock_env_var('EMPTY_BOOL_TEST', '');
+        self::assertTrue(Environment::getBool('EMPTY_BOOL_TEST', true));
+        self::assertFalse(Environment::getBool('EMPTY_BOOL_TEST', false));
+
         // Test various truthy values
         set_mock_constant('BOOL_TRUE_TEST', true);
         set_mock_constant('STRING_TRUE_TEST', 'true');
